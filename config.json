@@ -1,0 +1,19 @@
+{
+    "configVersion": "v1",
+    "appId": "net.oversphere.zx",
+    "triggers": {
+        "namedTriggers": {
+        }
+    },
+    "actions": {
+        "namedActions": {
+            "smartReviewAction": {
+                "actionType": "review_prompt",
+                "actionData": {},
+                "dev_note": "don't show for 21 days (504h) after shown, min app version check, and some best practices for times to avoid (low power, no network, ect)",
+                "condition": "(eventCount('system_app_review_requested') == 0 || latestEventTime('system_app_review_requested') < now() - duration('504h')) && versionGreaterThan(app_version, '1.6.0') && !device_low_power_mode && has_active_network && !low_data_mode && device_battery_level > 0.2"
+            }
+        }
+    }
+}
+
