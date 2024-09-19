@@ -3,17 +3,112 @@
     "appId": "net.oversphere.zx",
     "triggers": {
         "namedTriggers": {
+            "realSessionCompleteTrigger": {
+                "eventName": "session_finish_real",
+                "actionName": "reviewOrPremiumAction"
+            },
+            "showPremiumBannerTrigger": {
+                "eventName": "app_launch",
+                "condition": "!has_paid_subscription && eventCount('session_finish_real') >= 3 && eventCount('app_launch') % 3 == 0",
+                "actionName": "premium_banner"
+            }
         }
     },
     "actions": {
         "namedActions": {
+            "reviewOrPremiumAction": {
+                "actionType": "conditional_action",
+                "actionData": {
+                    "condition": "(has_paid_subscription || eventCount('app_launch') % 4 == 0) && (eventCount('system_app_review_requested') == 0 || latestEventTime('system_app_review_requested') < now() - duration('168h'))",
+                    "passedActionName": "smartReviewAction",
+                    "failedActionName": "smartPremiumPromptForRealSessionComplete"
+                }
+            },
             "smartReviewAction": {
                 "actionType": "review_prompt",
                 "actionData": {},
-                "dev_note": "don't show for 21 days (504h) after shown, min app version check, and some best practices for times to avoid (low power, no network, ect)",
-                "condition": "(eventCount('system_app_review_requested') == 0 || latestEventTime('system_app_review_requested') < now() - duration('504h')) && versionGreaterThan(app_version, '1.6.0') && !device_low_power_mode && has_active_network && !low_data_mode && device_battery_level > 0.2"
+                "dev_note": "don't show for week (168h) after shown, min app version check, and some best practices for times to avoid (low power, no network, ect)",
+                "condition": "(eventCount('system_app_review_requested') == 0 || latestEventTime('system_app_review_requested') < now() - duration('168h')) && versionGreaterThan(app_version, '1.6.0') && !device_low_power_mode && has_active_network && !low_data_mode && device_battery_level > 0.2"
+            },
+            "smartPremiumPromptForRealSessionComplete": {
+                "actionType": "link",
+                "dev_note": "some best practices for times to avoid (low power, no network, ect)",
+                "condition": "has_paid_subscription != true && !device_low_power_mode && has_active_network && !low_data_mode && device_battery_level > 0.2",
+                "actionData": {
+                    "url": "zx://show_paywall?source=session_finish_real"
+                }
+            },
+            "premium_banner": {
+              "actionType": "banner",
+              "condition": "has_paid_subscription != true && eventCount('completed_onboarding') > 0",
+              "actionData": {
+                "body": "Unlock All Features →",
+                "tapActionName": "premium_banner_action"
+              }
+            },
+            "premium_banner_action": {
+              "actionType": "link",
+              "actionData": {
+                "url": "zx://show_paywall?source=banner"
+              }
             }
         }
+    },
+    "notifications": {
+      "onboardingReminder": {
+        "title": "Train with Zx",
+        "body": "Start your fitness journey with Zx.",
+        "cancelationEvents": ["session_finish_real"],
+        "deliveryTimeOfDayStart": "10:00",
+        "deliveryTimeOfDayEnd": "20:00",
+        "deliveryTime": {
+          "eventName": "app_entered_background",
+          "eventInstance": "latest-once",
+          "eventOffsetSeconds": 900
+        }
+      },
+      "secondOnboardingReminder": {
+          "title": "Train with Zx",
+          "body": "Get started with Zx and HIIT your limits!",
+        "deliveryTimeOfDayStart": "10:00",
+        "deliveryTimeOfDayEnd": "20:00",
+        "scheduleCondition": "eventCount('session_finish_real') < 2",
+        "dev_note": "259,200s is 3 days, and 345,600s is 4 days - so this will be delivered between day 3 and day 7 after last app launch. It's canceled if the user creates an account (user_sync event). The ideal delivery time is when the user is holding their device (not flat), and it's screen is on.",
+        "deliveryTime": {
+          "eventName": "app_entered_background",
+          "eventInstance": "latest-once",
+          "eventOffsetSeconds": 259200
+        },
+        "idealDeliveryConditions": {
+          "condition": "screen_brightness > 0.01 && device_orientation != 'face_up' && device_orientation != 'face_down'",
+          "maxWaitTimeSeconds": 345600
+        }
+      },
+      "churnNotification": {
+        "title": "Zx Personal Fitness Coach",
+        "body": "Reconnect with your workout routine with Zx’s tailored plans.",
+        "deliveryTimeOfDayStart": "10:00",
+        "deliveryTimeOfDayEnd": "20:00",
+        "dev_note": "1,209,600s is 14 days, and 345,600s is 4 days - so this will be delivered between day 14 and day 18 after last app launch. The ideal delivery time is when the user is holding their device (not flat), and it's screen is on.",
+        "deliveryTime": {
+          "eventName": "app_entered_foreground",
+          "eventInstance": "latest",
+          "eventOffsetSeconds": 1209600
+        },
+        "idealDeliveryConditions": {
+          "condition": "screen_brightness > 0.01 && device_orientation != 'face_up' && device_orientation != 'face_down'",
+          "maxWaitTimeSeconds": 345600
+        }
+      }
+    },
+    "themes": {
+      "defaultThemeName": "zx_theme",
+      "namedThemes": {
+        "zx_theme": {
+            "bannerBackgroundColor": "#a7fe01",
+            "bannerForegroundColor": "#000000"
+        }
+      }
     }
 }
 
