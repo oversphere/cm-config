@@ -1,5 +1,5 @@
 {
-    "configVersion": "v2",
+    "configVersion": "v1",
     "appId": "net.oversphere.zx",
     "triggers": {
         "namedTriggers": {
