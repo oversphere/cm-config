@@ -1,5 +1,5 @@
 {
-    "configVersion": "v1",
+    "configVersion": "v2",
     "appId": "net.oversphere.zx",
     "triggers": {
         "namedTriggers": {
@@ -11,6 +11,30 @@
                 "eventName": "app_launch",
                 "condition": "!has_paid_subscription && eventCount('session_finish_real') >= 3 && eventCount('app_launch') % 3 == 0",
                 "actionName": "premium_banner"
+            },
+            "firstWorkoutMilestoneTrigger": {
+                "eventName": "session_finish_real",
+                "condition": "eventCount('session_finish_real') == 1",
+                "actionName": "first_workout_celebration"
+            },
+            "tenthWorkoutMilestoneTrigger": {
+                "eventName": "session_finish_real",
+                "condition": "eventCount('session_finish_real') == 10",
+                "actionName": "tenth_workout_celebration"
+            },
+            "goalCompletedTrigger": {
+                "eventName": "goal_completed",
+                "actionName": "goal_celebration"
+            },
+            "featureDiscoveryStudioTrigger": {
+                "eventName": "session_finish_real",
+                "condition": "eventCount('session_finish_real') >= 5 && eventCount('protocol_created') == 0",
+                "actionName": "discover_studio"
+            },
+            "featureDiscoveryExploreTrigger": {
+                "eventName": "app_launch",
+                "condition": "eventCount('session_finish_real') >= 3 && eventCount('protocol_downloaded') == 0 && eventCount('app_launch') % 5 == 0",
+                "actionName": "discover_explore"
             }
         }
     },
@@ -39,76 +63,320 @@
                 }
             },
             "premium_banner": {
-              "actionType": "banner",
-              "condition": "has_paid_subscription != true && eventCount('completed_onboarding') > 0",
-              "actionData": {
-                "body": "Unlock All Features →",
-                "tapActionName": "premium_banner_action"
-              }
+                "actionType": "banner",
+                "condition": "has_paid_subscription != true && eventCount('completed_onboarding') > 0",
+                "actionData": {
+                    "body": "Unlock All Features \u2192",
+                    "tapActionName": "premium_banner_action",
+                    "localizations": {
+                        "de": { "body": "Alle Funktionen freischalten \u2192" },
+                        "es": { "body": "Desbloquear todas las funciones \u2192" },
+                        "es-419": { "body": "Desbloquear todas las funciones \u2192" },
+                        "fr": { "body": "Débloquer toutes les fonctionnalités \u2192" },
+                        "ja": { "body": "すべての機能をアンロック \u2192" },
+                        "pt-BR": { "body": "Desbloquear todos os recursos \u2192" },
+                        "it": { "body": "Sblocca tutte le funzionalità \u2192" },
+                        "ko": { "body": "모든 기능 잠금 해제 \u2192" },
+                        "nl": { "body": "Alle functies ontgrendelen \u2192" },
+                        "zh-Hans": { "body": "解锁所有功能 \u2192" }
+                    }
+                }
             },
             "premium_banner_action": {
-              "actionType": "link",
-              "actionData": {
-                "url": "zx://show_paywall?source=banner"
-              }
+                "actionType": "link",
+                "actionData": {
+                    "url": "zx://show_paywall?source=banner"
+                }
+            },
+            "first_workout_celebration": {
+                "actionType": "alert",
+                "actionData": {
+                    "title": "First Workout Complete!",
+                    "message": "You just crushed your first workout. Keep up the momentum!",
+                    "okButtonText": "Let's Go",
+                    "localizations": {
+                        "de": { "title": "Erstes Workout geschafft!", "message": "Du hast dein erstes Workout gemeistert. Bleib am Ball!", "okButtonText": "Los geht's" },
+                        "es": { "title": "¡Primer entrenamiento completado!", "message": "Acabas de completar tu primer entrenamiento. ¡Sigue así!", "okButtonText": "Vamos" },
+                        "es-419": { "title": "¡Primer entrenamiento completado!", "message": "Acabas de completar tu primer entrenamiento. ¡Sigue así!", "okButtonText": "Vamos" },
+                        "fr": { "title": "Premier entraînement terminé !", "message": "Tu as réussi ton premier entraînement. Continue sur ta lancée !", "okButtonText": "C'est parti" },
+                        "ja": { "title": "初ワークアウト完了！", "message": "最初のワークアウトを達成しました。この調子で頑張ろう！", "okButtonText": "行こう" },
+                        "pt-BR": { "title": "Primeiro treino concluído!", "message": "Você arrasou no primeiro treino. Continue assim!", "okButtonText": "Vamos lá" },
+                        "it": { "title": "Primo allenamento completato!", "message": "Hai completato il tuo primo allenamento. Continua così!", "okButtonText": "Andiamo" },
+                        "ko": { "title": "첫 운동 완료!", "message": "첫 운동을 해냈어요. 이 기세를 이어가세요!", "okButtonText": "시작" },
+                        "nl": { "title": "Eerste workout voltooid!", "message": "Je hebt je eerste workout voltooid. Houd het momentum vast!", "okButtonText": "Aan de slag" },
+                        "zh-Hans": { "title": "首次锻炼完成！", "message": "你完成了第一次锻炼。继续保持！", "okButtonText": "开始吧" }
+                    }
+                }
+            },
+            "tenth_workout_celebration": {
+                "actionType": "alert",
+                "actionData": {
+                    "title": "10 Workouts Strong!",
+                    "message": "You've completed 10 workouts with Zx. You're building a real habit!",
+                    "okButtonText": "Keep Going",
+                    "localizations": {
+                        "de": { "title": "10 Workouts geschafft!", "message": "Du hast 10 Workouts mit Zx absolviert. Du baust eine echte Gewohnheit auf!", "okButtonText": "Weiter so" },
+                        "es": { "title": "¡10 entrenamientos fuertes!", "message": "Has completado 10 entrenamientos con Zx. ¡Estás creando un hábito!", "okButtonText": "Sigue así" },
+                        "es-419": { "title": "¡10 entrenamientos fuertes!", "message": "Has completado 10 entrenamientos con Zx. ¡Estás creando un hábito!", "okButtonText": "Sigue así" },
+                        "fr": { "title": "10 entraînements accomplis !", "message": "Tu as terminé 10 entraînements avec Zx. Tu crées une vraie habitude !", "okButtonText": "Continue" },
+                        "ja": { "title": "10回ワークアウト達成！", "message": "Zxで10回のワークアウトを完了しました。習慣になってきていますね！", "okButtonText": "続けよう" },
+                        "pt-BR": { "title": "10 treinos completos!", "message": "Você completou 10 treinos com o Zx. Está criando um hábito de verdade!", "okButtonText": "Continue" },
+                        "it": { "title": "10 allenamenti completati!", "message": "Hai completato 10 allenamenti con Zx. Stai costruendo una vera abitudine!", "okButtonText": "Continua" },
+                        "ko": { "title": "10회 운동 달성!", "message": "Zx로 10번의 운동을 완료했어요. 진정한 습관을 만들고 있어요!", "okButtonText": "계속하기" },
+                        "nl": { "title": "10 workouts voltooid!", "message": "Je hebt 10 workouts met Zx voltooid. Je bouwt een echte gewoonte op!", "okButtonText": "Doorgaan" },
+                        "zh-Hans": { "title": "完成10次锻炼！", "message": "你已完成10次Zx锻炼。你正在养成真正的习惯！", "okButtonText": "继续" }
+                    }
+                }
+            },
+            "goal_celebration": {
+                "actionType": "alert",
+                "actionData": {
+                    "title": "Goal Achieved!",
+                    "message": "You crushed your goal. Ready to set a new challenge?",
+                    "okButtonText": "Nice!",
+                    "localizations": {
+                        "de": { "title": "Ziel erreicht!", "message": "Du hast dein Ziel erreicht. Bereit für eine neue Herausforderung?", "okButtonText": "Super!" },
+                        "es": { "title": "¡Meta lograda!", "message": "Alcanzaste tu meta. ¿Listo para un nuevo desafío?", "okButtonText": "¡Genial!" },
+                        "es-419": { "title": "¡Meta lograda!", "message": "Alcanzaste tu meta. ¿Listo para un nuevo desafío?", "okButtonText": "¡Genial!" },
+                        "fr": { "title": "Objectif atteint !", "message": "Tu as atteint ton objectif. Prêt pour un nouveau défi ?", "okButtonText": "Super !" },
+                        "ja": { "title": "目標達成！", "message": "目標を達成しました。新しいチャレンジに挑戦しますか？", "okButtonText": "いいね！" },
+                        "pt-BR": { "title": "Meta alcançada!", "message": "Você atingiu sua meta. Pronto para um novo desafio?", "okButtonText": "Legal!" },
+                        "it": { "title": "Obiettivo raggiunto!", "message": "Hai raggiunto il tuo obiettivo. Pronto per una nuova sfida?", "okButtonText": "Fantastico!" },
+                        "ko": { "title": "목표 달성!", "message": "목표를 달성했어요. 새로운 도전을 시작할 준비가 됐나요?", "okButtonText": "좋아요!" },
+                        "nl": { "title": "Doel bereikt!", "message": "Je hebt je doel bereikt. Klaar voor een nieuwe uitdaging?", "okButtonText": "Geweldig!" },
+                        "zh-Hans": { "title": "目标达成！", "message": "你完成了目标。准备好迎接新挑战了吗？", "okButtonText": "太棒了！" }
+                    }
+                }
+            },
+            "discover_studio": {
+                "actionType": "banner",
+                "actionData": {
+                    "body": "Create your own custom workout \u2192",
+                    "tapActionName": "open_studio_action",
+                    "localizations": {
+                        "de": { "body": "Erstelle dein eigenes Workout \u2192" },
+                        "es": { "body": "Crea tu propio entrenamiento \u2192" },
+                        "es-419": { "body": "Crea tu propio entrenamiento \u2192" },
+                        "fr": { "body": "Crée ton propre entraînement \u2192" },
+                        "ja": { "body": "カスタムワークアウトを作成 \u2192" },
+                        "pt-BR": { "body": "Crie seu próprio treino \u2192" },
+                        "it": { "body": "Crea il tuo allenamento personalizzato \u2192" },
+                        "ko": { "body": "나만의 운동 만들기 \u2192" },
+                        "nl": { "body": "Maak je eigen workout \u2192" },
+                        "zh-Hans": { "body": "创建自定义锻炼 \u2192" }
+                    }
+                }
+            },
+            "discover_explore": {
+                "actionType": "banner",
+                "actionData": {
+                    "body": "Discover community workouts \u2192",
+                    "tapActionName": "open_train_action",
+                    "localizations": {
+                        "de": { "body": "Entdecke Community-Workouts \u2192" },
+                        "es": { "body": "Descubre entrenamientos de la comunidad \u2192" },
+                        "es-419": { "body": "Descubre entrenamientos de la comunidad \u2192" },
+                        "fr": { "body": "Découvre les entraînements de la communauté \u2192" },
+                        "ja": { "body": "コミュニティのワークアウトを発見 \u2192" },
+                        "pt-BR": { "body": "Descubra treinos da comunidade \u2192" },
+                        "it": { "body": "Scopri gli allenamenti della community \u2192" },
+                        "ko": { "body": "커뮤니티 운동 발견하기 \u2192" },
+                        "nl": { "body": "Ontdek community workouts \u2192" },
+                        "zh-Hans": { "body": "发现社区锻炼 \u2192" }
+                    }
+                }
+            },
+            "open_studio_action": {
+                "actionType": "link",
+                "actionData": {
+                    "url": "zx://open_studio"
+                }
+            },
+            "open_train_action": {
+                "actionType": "link",
+                "actionData": {
+                    "url": "zx://open_train"
+                }
             }
         }
     },
     "notifications": {
-      "onboardingReminder": {
-        "title": "Train with Zx",
-        "body": "Start your fitness journey with Zx.",
-        "cancelationEvents": ["session_finish_real"],
-        "deliveryTimeOfDayStart": "10:00",
-        "deliveryTimeOfDayEnd": "20:00",
-        "deliveryTime": {
-          "eventName": "app_entered_background",
-          "eventInstance": "latest-once",
-          "eventOffsetSeconds": 900
-        }
-      },
-      "secondOnboardingReminder": {
-          "title": "Train with Zx",
-          "body": "Get started with Zx and HIIT your limits!",
-        "deliveryTimeOfDayStart": "10:00",
-        "deliveryTimeOfDayEnd": "20:00",
-        "scheduleCondition": "eventCount('session_finish_real') < 2",
-        "dev_note": "259,200s is 3 days, and 345,600s is 4 days - so this will be delivered between day 3 and day 7 after last app launch. It's canceled if the user creates an account (user_sync event). The ideal delivery time is when the user is holding their device (not flat), and it's screen is on.",
-        "deliveryTime": {
-          "eventName": "app_entered_background",
-          "eventInstance": "latest-once",
-          "eventOffsetSeconds": 259200
+        "onboardingReminder": {
+            "title": "Train with Zx",
+            "body": "Start your fitness journey with Zx.",
+            "cancelationEvents": ["session_finish_real"],
+            "deliveryTimeOfDayStart": "10:00",
+            "deliveryTimeOfDayEnd": "20:00",
+            "deliveryTime": {
+                "eventName": "app_entered_background",
+                "eventInstance": "latest-once",
+                "eventOffsetSeconds": 900
+            },
+            "localizations": {
+                "de": { "title": "Trainiere mit Zx", "body": "Starte deine Fitness-Reise mit Zx." },
+                "es": { "title": "Entrena con Zx", "body": "Comienza tu viaje fitness con Zx." },
+                "es-419": { "title": "Entrena con Zx", "body": "Comienza tu viaje fitness con Zx." },
+                "fr": { "title": "Entraîne-toi avec Zx", "body": "Commence ton parcours fitness avec Zx." },
+                "ja": { "title": "Zxでトレーニング", "body": "Zxでフィットネスの旅を始めよう。" },
+                "pt-BR": { "title": "Treine com Zx", "body": "Comece sua jornada fitness com o Zx." },
+                "it": { "title": "Allenati con Zx", "body": "Inizia il tuo percorso fitness con Zx." },
+                "ko": { "title": "Zx로 훈련하세요", "body": "Zx와 함께 피트니스 여정을 시작하세요." },
+                "nl": { "title": "Train met Zx", "body": "Begin je fitnessreis met Zx." },
+                "zh-Hans": { "title": "用Zx训练", "body": "开始你的Zx健身之旅。" }
+            }
         },
-        "idealDeliveryConditions": {
-          "condition": "screen_brightness > 0.01 && device_orientation != 'face_up' && device_orientation != 'face_down'",
-          "maxWaitTimeSeconds": 345600
-        }
-      },
-      "churnNotification": {
-        "title": "Zx Personal Fitness Coach",
-        "body": "Reconnect with your workout routine with Zx’s tailored plans.",
-        "deliveryTimeOfDayStart": "10:00",
-        "deliveryTimeOfDayEnd": "20:00",
-        "dev_note": "1,209,600s is 14 days, and 345,600s is 4 days - so this will be delivered between day 14 and day 18 after last app launch. The ideal delivery time is when the user is holding their device (not flat), and it's screen is on.",
-        "deliveryTime": {
-          "eventName": "app_entered_foreground",
-          "eventInstance": "latest",
-          "eventOffsetSeconds": 1209600
+        "secondOnboardingReminder": {
+            "title": "Train with Zx",
+            "body": "Get started with Zx and HIIT your limits!",
+            "deliveryTimeOfDayStart": "10:00",
+            "deliveryTimeOfDayEnd": "20:00",
+            "scheduleCondition": "eventCount('session_finish_real') < 2",
+            "dev_note": "259,200s is 3 days, and 345,600s is 4 days - so this will be delivered between day 3 and day 7 after last app launch.",
+            "deliveryTime": {
+                "eventName": "app_entered_background",
+                "eventInstance": "latest-once",
+                "eventOffsetSeconds": 259200
+            },
+            "idealDeliveryConditions": {
+                "condition": "screen_brightness > 0.01 && device_orientation != 'face_up' && device_orientation != 'face_down'",
+                "maxWaitTimeSeconds": 345600
+            },
+            "localizations": {
+                "de": { "title": "Trainiere mit Zx", "body": "Starte mit Zx und übertreffe deine Grenzen!" },
+                "es": { "title": "Entrena con Zx", "body": "Comienza con Zx y supera tus límites!" },
+                "es-419": { "title": "Entrena con Zx", "body": "Comienza con Zx y supera tus límites!" },
+                "fr": { "title": "Entraîne-toi avec Zx", "body": "Commence avec Zx et dépasse tes limites !" },
+                "ja": { "title": "Zxでトレーニング", "body": "Zxで始めて、限界を超えよう！" },
+                "pt-BR": { "title": "Treine com Zx", "body": "Comece com o Zx e supere seus limites!" },
+                "it": { "title": "Allenati con Zx", "body": "Inizia con Zx e supera i tuoi limiti!" },
+                "ko": { "title": "Zx로 훈련하세요", "body": "Zx와 함께 시작하고 한계를 넘어서세요!" },
+                "nl": { "title": "Train met Zx", "body": "Begin met Zx en overwin je grenzen!" },
+                "zh-Hans": { "title": "用Zx训练", "body": "开始使用Zx，突破你的极限！" }
+            }
         },
-        "idealDeliveryConditions": {
-          "condition": "screen_brightness > 0.01 && device_orientation != 'face_up' && device_orientation != 'face_down'",
-          "maxWaitTimeSeconds": 345600
+        "churnNotification": {
+            "title": "Zx Personal Fitness Coach",
+            "body": "Reconnect with your workout routine with Zx's tailored plans.",
+            "deliveryTimeOfDayStart": "10:00",
+            "deliveryTimeOfDayEnd": "20:00",
+            "dev_note": "1,209,600s is 14 days, and 345,600s is 4 days - so this will be delivered between day 14 and day 18 after last app launch.",
+            "deliveryTime": {
+                "eventName": "app_entered_foreground",
+                "eventInstance": "latest",
+                "eventOffsetSeconds": 1209600
+            },
+            "idealDeliveryConditions": {
+                "condition": "screen_brightness > 0.01 && device_orientation != 'face_up' && device_orientation != 'face_down'",
+                "maxWaitTimeSeconds": 345600
+            },
+            "localizations": {
+                "de": { "title": "Zx Fitness Coach", "body": "Finde zurück zu deinem Training mit Zx's maßgeschneiderten Plänen." },
+                "es": { "title": "Zx Entrenador Personal", "body": "Reconéctate con tu rutina de ejercicios con los planes personalizados de Zx." },
+                "es-419": { "title": "Zx Entrenador Personal", "body": "Reconéctate con tu rutina de ejercicios con los planes personalizados de Zx." },
+                "fr": { "title": "Zx Coach Personnel", "body": "Retrouve ta routine d'entraînement avec les plans personnalisés de Zx." },
+                "ja": { "title": "Zx パーソナルコーチ", "body": "Zxのカスタムプランでワークアウトに戻ろう。" },
+                "pt-BR": { "title": "Zx Treinador Pessoal", "body": "Reconecte-se com sua rotina de treinos com os planos personalizados do Zx." },
+                "it": { "title": "Zx Coach Personale", "body": "Riconnettiti con la tua routine di allenamento con i piani personalizzati di Zx." },
+                "ko": { "title": "Zx 개인 피트니스 코치", "body": "Zx의 맞춤 계획으로 운동 루틴에 다시 연결하세요." },
+                "nl": { "title": "Zx Personal Fitness Coach", "body": "Hervind je trainingsroutine met Zx's gepersonaliseerde plannen." },
+                "zh-Hans": { "title": "Zx 私人健身教练", "body": "通过Zx的定制计划重新开始你的锻炼。" }
+            }
+        },
+        "streakReminder": {
+            "title": "Keep Your Streak Alive",
+            "body": "You've been consistent this week. One more workout to stay on track!",
+            "scheduleCondition": "eventCount('session_finish_real') >= 3",
+            "deliveryTimeOfDayStart": "09:00",
+            "deliveryTimeOfDayEnd": "11:00",
+            "dev_note": "172,800s is 2 days - sent 2 days after last workout to active users",
+            "deliveryTime": {
+                "eventName": "session_finish_real",
+                "eventInstance": "latest-once",
+                "eventOffsetSeconds": 172800
+            },
+            "idealDeliveryConditions": {
+                "condition": "screen_brightness > 0.01 && device_orientation != 'face_up' && device_orientation != 'face_down'",
+                "maxWaitTimeSeconds": 86400
+            },
+            "localizations": {
+                "de": { "title": "Halte deine Serie aufrecht", "body": "Du warst diese Woche konstant. Noch ein Workout, um am Ball zu bleiben!" },
+                "es": { "title": "Mantén tu racha", "body": "Has sido constante esta semana. ¡Un entrenamiento más para seguir en racha!" },
+                "es-419": { "title": "Mantén tu racha", "body": "Has sido constante esta semana. ¡Un entrenamiento más para seguir en racha!" },
+                "fr": { "title": "Garde ta série en vie", "body": "Tu as été régulier cette semaine. Encore un entraînement pour rester sur la bonne voie !" },
+                "ja": { "title": "連続記録を維持しよう", "body": "今週は継続できています。もう1回ワークアウトして記録を続けよう！" },
+                "pt-BR": { "title": "Mantenha sua sequência", "body": "Você foi consistente esta semana. Mais um treino para continuar no caminho certo!" },
+                "it": { "title": "Mantieni la tua serie", "body": "Sei stato costante questa settimana. Un altro allenamento per rimanere in pista!" },
+                "ko": { "title": "연속 기록을 유지하세요", "body": "이번 주 꾸준히 했어요. 한 번 더 운동해서 기록을 이어가세요!" },
+                "nl": { "title": "Houd je reeks gaande", "body": "Je bent deze week consistent geweest. Nog één workout om op koers te blijven!" },
+                "zh-Hans": { "title": "保持你的连续记录", "body": "这周你一直很稳定。再锻炼一次就能保持节奏！" }
+            }
+        },
+        "goalProgressReminder": {
+            "title": "Goal Check-in",
+            "body": "You're making progress on your goals. A quick session keeps you on track.",
+            "scheduleCondition": "eventCount('goal_created') > 0",
+            "deliveryTimeOfDayStart": "17:00",
+            "deliveryTimeOfDayEnd": "20:00",
+            "dev_note": "259,200s is 3 days - sent to users who have goals set",
+            "deliveryTime": {
+                "eventName": "app_entered_background",
+                "eventInstance": "latest-once",
+                "eventOffsetSeconds": 259200
+            },
+            "idealDeliveryConditions": {
+                "condition": "screen_brightness > 0.01 && device_orientation != 'face_up' && device_orientation != 'face_down'",
+                "maxWaitTimeSeconds": 86400
+            },
+            "localizations": {
+                "de": { "title": "Ziel-Check", "body": "Du machst Fortschritte bei deinen Zielen. Eine kurze Session hält dich auf Kurs." },
+                "es": { "title": "Revisión de metas", "body": "Estás progresando en tus metas. Una sesión rápida te mantiene en camino." },
+                "es-419": { "title": "Revisión de metas", "body": "Estás progresando en tus metas. Una sesión rápida te mantiene en camino." },
+                "fr": { "title": "Point sur tes objectifs", "body": "Tu progresses vers tes objectifs. Une session rapide te garde sur la bonne voie." },
+                "ja": { "title": "目標チェック", "body": "目標に向かって進んでいます。短いセッションで軌道に乗り続けよう。" },
+                "pt-BR": { "title": "Verificação de metas", "body": "Você está progredindo nas suas metas. Uma sessão rápida te mantém no caminho certo." },
+                "it": { "title": "Controllo obiettivi", "body": "Stai facendo progressi verso i tuoi obiettivi. Una sessione veloce ti mantiene in pista." },
+                "ko": { "title": "목표 점검", "body": "목표를 향해 나아가고 있어요. 짧은 세션으로 꾸준히 유지하세요." },
+                "nl": { "title": "Doel check-in", "body": "Je maakt vooruitgang met je doelen. Een snelle sessie houdt je op koers." },
+                "zh-Hans": { "title": "目标检查", "body": "你的目标正在取得进展。快速锻炼一下保持状态。" }
+            }
+        },
+        "winbackHighEngagement": {
+            "title": "We Miss You",
+            "body": "You were crushing it! Ready to pick back up?",
+            "scheduleCondition": "eventCount('session_finish_real') >= 10",
+            "deliveryTimeOfDayStart": "10:00",
+            "deliveryTimeOfDayEnd": "19:00",
+            "dev_note": "604,800s is 7 days - for power users who haven't opened in a week",
+            "deliveryTime": {
+                "eventName": "app_entered_foreground",
+                "eventInstance": "latest",
+                "eventOffsetSeconds": 604800
+            },
+            "idealDeliveryConditions": {
+                "condition": "screen_brightness > 0.01 && device_orientation != 'face_up' && device_orientation != 'face_down'",
+                "maxWaitTimeSeconds": 172800
+            },
+            "localizations": {
+                "de": { "title": "Wir vermissen dich", "body": "Du warst richtig gut dabei! Bereit wieder einzusteigen?" },
+                "es": { "title": "Te echamos de menos", "body": "¡Lo estabas haciendo genial! ¿Listo para volver?" },
+                "es-419": { "title": "Te echamos de menos", "body": "¡Lo estabas haciendo genial! ¿Listo para volver?" },
+                "fr": { "title": "Tu nous manques", "body": "Tu étais au top ! Prêt à reprendre ?" },
+                "ja": { "title": "お待ちしています", "body": "調子よかったですね！また始めませんか？" },
+                "pt-BR": { "title": "Sentimos sua falta", "body": "Você estava arrasando! Pronto para voltar?" },
+                "it": { "title": "Ci manchi", "body": "Stavi andando alla grande! Pronto a riprendere?" },
+                "ko": { "title": "보고 싶어요", "body": "정말 잘하고 있었어요! 다시 시작할 준비 됐나요?" },
+                "nl": { "title": "We missen je", "body": "Je was geweldig bezig! Klaar om weer te beginnen?" },
+                "zh-Hans": { "title": "我们想念你", "body": "你之前做得很棒！准备好继续了吗？" }
+            }
         }
-      }
     },
     "themes": {
-      "defaultThemeName": "zx_theme",
-      "namedThemes": {
-        "zx_theme": {
-            "bannerBackgroundColor": "#a7fe01",
-            "bannerForegroundColor": "#000000"
+        "defaultThemeName": "zx_theme",
+        "namedThemes": {
+            "zx_theme": {
+                "bannerBackgroundColor": "#a7fe01",
+                "bannerForegroundColor": "#000000"
+            }
         }
-      }
     }
 }
-
